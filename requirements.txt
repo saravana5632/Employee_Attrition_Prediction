@@ -1,8 +1,3 @@
-numpy
+flask
 pandas
-scikit-learn
-streamlit
-pandas
-matplotlib
-seaborn
 scikit-learn
