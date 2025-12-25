@@ -70,6 +70,6 @@ high_risk = (
     .head(20)
     .reset_index(drop=True) 
 )
-
+high_risk.index = high_risk.index + 1
 st.dataframe(high_risk, use_container_width=True)
 
