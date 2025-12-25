@@ -58,18 +58,18 @@ with col2:
     st.pyplot(fig)
 
 st.divider()
-st.subheader("⚠️ High Risk Employees")
+st.subheader("High Risk Employees")
 
 X = df_encoded.drop('Attrition', axis=1)
 df_display['Attrition_Probability'] = model.predict_proba(X)[:, 1]
 high_risk = df_display[df_display['Attrition_Probability'] > 0.6]
-high_risk = high_risk.reset_index(drop=True)
 
-st.dataframe(
-    high_risk[
-        ['Age', 'Department', 'MonthlyIncome', 'Attrition_Probability']
-    ]
+high_risk = (
+    high_risk[['Age', 'Department', 'MonthlyIncome', 'Attrition_Probability']]
     .sort_values(by='Attrition_Probability', ascending=False)
-    .head(20),
-    use_container_width=True
+    .head(20)
+    .reset_index(drop=True) 
 )
+
+st.dataframe(high_risk, use_container_width=True)
+
