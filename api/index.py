@@ -16,9 +16,6 @@ for col in df_encoded.select_dtypes(include='object').columns:
 
 model = pickle.load(open("attrition_model.pkl", "rb"))
 
-@app.route('/')
-def home():
-    return "Flask app is running 🚀"
 
 @app.route('/dashboard')
 def dashboard():
