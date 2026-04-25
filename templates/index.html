@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Employee Attrition Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI';
+            margin: 0;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            width: 95%;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .metrics {
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 1;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .charts {
+            display: flex;
+            justify-content: center;   
+            align-items: center;       
+            gap: 40px;                 
+            margin-top: 30px;
+            flex-wrap: wrap;           
+        }
+
+        
+        .chart-box {
+            width: 400px;
+            height: 300px;
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: #1e293b;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #334155;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Employee Attrition Dashboard</h1>
+
+
+<div class="metrics">
+    <div class="card">
+        <h3>Total Employees</h3>
+        <p>{{ total_emp }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Attrition Rate (%)</h3>
+        <p>{{ attrition_rate }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Avg Income</h3>
+        <p>{{ avg_salary }}</p>
+    </div>
+</div>
+
+
+<div class="charts">
+    <div class="chart-box">
+        <canvas id="attritionChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <canvas id="incomeChart"></canvas>
+    </div>
+</div>
+
+
+<h2>High Risk Employees</h2>
+<table>
+<tr>
+    <th>Age</th>
+    <th>Department</th>
+    <th>Income</th>
+    <th>Probability</th>
+</tr>
+
+{% for emp in high_risk %}
+<tr>
+    <td>{{ emp.Age }}</td>
+    <td>{{ emp.Department }}</td>
+    <td>{{ emp.MonthlyIncome }}</td>
+    <td>{{ "%.2f"|format(emp.Attrition_Probability) }}</td>
+</tr>
+{% endfor %}
+</table>
+
+</div>
+
+<script>
+
+const attritionData = {{ attrition_counts | default({0:0,1:0}) | tojson }};
+const incomeData = {{ income_data | default({0:[],1:[]}) | tojson }};
+
+
+new Chart(document.getElementById('attritionChart'), {
+    type: 'pie',
+    data: {
+        labels: ['No', 'Yes'],
+        datasets: [{
+            data: [
+                attritionData[0] || 0,
+                attritionData[1] || 0
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+
+const avgNo = incomeData[0].length 
+    ? incomeData[0].reduce((a,b)=>a+b,0)/incomeData[0].length 
+    : 0;
+
+const avgYes = incomeData[1].length 
+    ? incomeData[1].reduce((a,b)=>a+b,0)/incomeData[1].length 
+    : 0;
+
+
+new Chart(document.getElementById('incomeChart'), {
+    type: 'bar',
+    data: {
+        labels: ['No Attrition', 'Attrition'],
+        datasets: [{
+            label: 'Average Income',
+            data: [avgNo, avgYes]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+</script>
+
+</body>
+</html>
